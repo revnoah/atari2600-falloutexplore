@@ -20,6 +20,7 @@
  dim itemCount=0
  dim foundItem=0
  dim soundPlaying=0
+ dim ballSpeed=1
 
  const minPlayer0y = 40
  const maxPlayer0y = 70
@@ -29,7 +30,6 @@
  const maxBallY = 80
  dim ballCounter = 0
  dim playerAnimation = 0
-
 
  player0x=90:player0y=60
  score=0
@@ -70,26 +70,6 @@ end
  %00000000
 end
 
- rem mutant
- player1:
- %11001110
- %01001000
- %01111000
- %00110000
- %00110000
- %00110000
- %00110000
- %00110001
- %00110110
- %00111000
- %00110000
- %01111100
- %01111100
- %01111100
- %11111100
- %01111000
-end
-
  rem ** position the other objects, to prove we still can
  rem player1x=-30:player1y=40
  rem missile1x=100:missile1y=40:missile1height=6
@@ -98,14 +78,12 @@ mainloop
 
   if joy0up && player0y > minPlayer0y then gosub movePlayerUp
   if joy0down && player0y < maxPlayer0y then gosub movePlayerDown
-  rem if joy0down then player0y = player0y + 1
 
   if collision(ball, player0) then gosub hitBall
-  rem if collision(playfield, player0) then ballx = 0
 
   rem if playerAnimation = 1 then animatePlayer2:playerAnimation = 0 else animatePlayer1
 
-  if ballx > maxBallX then ballx = minBallX else ballx = ballx + 1
+  if ballx > maxBallX then gosub positionBall else ballx = ballx + ballSpeed
   if bally < minBallY || bally > maxBallY then gosub positionBall
 
   rem if frame > 100 then gosub animatePlayer1 else gosub animatePlayer2
@@ -113,8 +91,6 @@ mainloop
   frame = frame + 1
   if frame = 30 then gosub animatePlayer2
   if frame = 60 then gosub animatePlayer1:frame=1
-
-  rem if rand < 10 then activateMonster
 
   if soundPlaying > 1 && (soundPlaying + 5) < frame then AUDV0=0
 
@@ -149,8 +125,8 @@ hitBall
   return
 
 positionBall
-  dim randPosition = rand
-  if randPosition < (maxBallY - minBallY) then bally = randPosition + minBallY: foundItem = 1
+  ballx = minBallX
+  bally = (rand&31) + 35
 
   return
 
